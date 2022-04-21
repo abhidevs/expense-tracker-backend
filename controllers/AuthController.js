@@ -1,28 +1,29 @@
 const AuthService = require("../services/AuthService");
+const UserService = require("../services/UserService");
 const { comparePassword } = require("../utils/encryptPass");
 const { generateAccessToken } = require("../utils/jwtToken");
 
 exports.registerUser = async (req, res) => {
   try {
-    const checkUser = await AuthService.checkIfUserExists(req.body);
+    const checkUser = await UserService.checkIfUserExists(req.body);
     if (checkUser) {
       res.status(403).json({ message: "User already exists!", success: false });
     } else {
       await AuthService.createUser(req.body);
-      res.json({
+      res.status(201).json({
         message: "Signed up successfully. Please login.",
         success: true,
       });
     }
   } catch (error) {
     console.log(error);
-    res.send(error);
+    res.status(500).send(error);
   }
 };
 
 exports.loginUser = async (req, res) => {
   try {
-    const checkUser = await AuthService.checkIfUserExists(req.body);
+    const checkUser = await UserService.checkIfUserExists(req.body);
     if (checkUser) {
       const match = await comparePassword(
         req.body.password,
@@ -34,7 +35,7 @@ exports.loginUser = async (req, res) => {
           name: checkUser.name,
           email: checkUser.email,
         });
-        res.json({accessToken: token});
+        res.json({ accessToken: token });
       } else {
         res.status(401).json({ message: "Wrong password!", success: false });
       }
@@ -43,6 +44,6 @@ exports.loginUser = async (req, res) => {
     }
   } catch (error) {
     console.log(error);
-    res.send(error);
+    res.status(500).send(error);
   }
 };
