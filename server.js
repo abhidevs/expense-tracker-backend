@@ -8,8 +8,10 @@ dotenv.config();
 const sequelize = require("./utils/db");
 const AuthRoutes = require("./routes/AuthRoutes");
 const ExpenseRoutes = require("./routes/ExpenseRoutes");
+const PaymentRoutes = require("./routes/PaymentRoutes");
 const User = require("./models/User");
 const Expense = require("./models/Expense");
+const Order = require("./models/Order");
 
 const app = express();
 
@@ -20,9 +22,12 @@ app.use(bodyParser.json());
 app.get("/api", (req, res) => res.send("Welcome to Expense Tracker API"));
 app.use("/api/auth", AuthRoutes);
 app.use("/api/user/expense", ExpenseRoutes);
+app.use("/api/user/payment", PaymentRoutes);
 
 User.hasMany(Expense);
 Expense.belongsTo(User);
+User.hasMany(Order);
+Order.belongsTo(User);
 
 sequelize
   .sync()

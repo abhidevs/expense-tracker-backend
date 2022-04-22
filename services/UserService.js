@@ -28,3 +28,11 @@ exports.findUserById = async (id) => {
     throw error;
   }
 };
+
+exports.upgradeUserToPremium = async (id) => {
+  try {
+    return await User.update({ isPremiumMember: true }, { where: { id: id } });
+  } catch (error) {
+    throw error;
+  }
+};

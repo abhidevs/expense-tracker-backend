@@ -35,7 +35,7 @@ exports.loginUser = async (req, res) => {
           name: checkUser.name,
           email: checkUser.email,
         });
-        res.json({ accessToken: token });
+        res.json({ accessToken: token, isPremiumMember: checkUser.isPremiumMember });
       } else {
         res.status(401).json({ message: "Wrong password!", success: false });
       }

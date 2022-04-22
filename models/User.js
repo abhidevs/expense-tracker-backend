@@ -13,6 +13,7 @@ const User = sequelize.define("user", {
   email: { type: DataTypes.STRING, allowNull: false, unique: true },
   phone: { type: DataTypes.STRING, allowNull: false, unique: true },
   password: { type: DataTypes.STRING, allowNull: false },
+  isPremiumMember: { type: DataTypes.BOOLEAN, defaultValue: false },
 });
 
 module.exports = User;
