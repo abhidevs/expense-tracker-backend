@@ -2,6 +2,7 @@ const AuthService = require("../services/AuthService");
 const UserService = require("../services/UserService");
 const { comparePassword } = require("../utils/encryptPass");
 const { generateAccessToken } = require("../utils/jwtToken");
+const sendmail = require("../utils/sendmail");
 
 exports.registerUser = async (req, res) => {
   try {
@@ -35,12 +36,36 @@ exports.loginUser = async (req, res) => {
           name: checkUser.name,
           email: checkUser.email,
         });
-        res.json({ accessToken: token, isPremiumMember: checkUser.isPremiumMember });
+        res.json({
+          accessToken: token,
+          isPremiumMember: checkUser.isPremiumMember,
+        });
       } else {
         res.status(401).json({ message: "Wrong password!", success: false });
       }
     } else {
       res.status(404).json({ message: "User not found!", success: false });
+    }
+  } catch (error) {
+    console.log(error);
+    res.status(500).send(error);
+  }
+};
+
+exports.forgetPassword = async (req, res) => {
+  try {
+    const checkUser = await UserService.checkIfUserExists(req.body);
+    if (!checkUser) {
+      res.status(404).json({ message: "User not found", success: false });
+    } else {
+      sendmail(
+        req.body.email,
+        "Reset password for Expense tracker",
+        "Reset password for Expense tracker",
+        "<strong>Reset password for Expense tracker</strong>"
+      )
+        .then((res) => console.log(res))
+        .catch((err) => console.log(err));
     }
   } catch (error) {
     console.log(error);
