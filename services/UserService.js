@@ -1,5 +1,6 @@
 const User = require("../models/User");
 const { Op } = require("sequelize");
+const { hashPassword } = require("../utils/encryptPass");
 
 exports.checkIfUserExists = async ({ email, phone }) => {
   try {
@@ -32,6 +33,15 @@ exports.findUserById = async (id) => {
 exports.upgradeUserToPremium = async (id) => {
   try {
     return await User.update({ isPremiumMember: true }, { where: { id: id } });
+  } catch (error) {
+    throw error;
+  }
+};
+
+exports.findUserByIdAndUpdatePassword = async (id, password) => {
+  try {
+    let hashedPass = await hashPassword(password);
+    return await User.update({ password: hashedPass }, { where: { id } });
   } catch (error) {
     throw error;
   }
