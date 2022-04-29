@@ -2,6 +2,8 @@ const ExpenseService = require("../services/ExpenseService");
 const AWSS3Service = require("../services/AWSS3Service");
 const UserService = require("../services/UserService");
 
+const EXPENSES_PER_PAGE = 10;
+
 exports.addExpense = async (req, res) => {
   try {
     req.user = await UserService.findUserById(req.user.id);
@@ -15,9 +17,24 @@ exports.addExpense = async (req, res) => {
 
 exports.getAllExpenses = async (req, res) => {
   try {
-    req.user = await UserService.findUserById(req.user.id);
-    const expenses = await ExpenseService.getAllExpensesOfUser(req);
-    res.status(201).json(expenses);
+    const page = +req.query.page || 1;
+    const user = await UserService.findUserById(req.user.id);
+    const { count, rows: expenses } =
+      await ExpenseService.getAllExpensesAndCount(
+        user,
+        page,
+        EXPENSES_PER_PAGE
+      );
+
+    res.json({
+      expenses: expenses,
+      currentPage: page,
+      hasNextPage: EXPENSES_PER_PAGE * page < count,
+      nextPage: page + 1,
+      hasPreviousPage: page > 1,
+      previousPage: page - 1,
+      lastPage: Math.ceil(count / EXPENSES_PER_PAGE),
+    });
   } catch (error) {
     console.log(error);
     res.status(500).send(error);
