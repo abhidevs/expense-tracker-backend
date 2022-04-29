@@ -18,22 +18,20 @@ exports.addExpense = async (req, res) => {
 exports.getAllExpenses = async (req, res) => {
   try {
     const page = +req.query.page || 1;
+    const perPage = +req.query.perpage || EXPENSES_PER_PAGE;
+    console.log(req.query.perpage);
     const user = await UserService.findUserById(req.user.id);
     const { count, rows: expenses } =
-      await ExpenseService.getAllExpensesAndCount(
-        user,
-        page,
-        EXPENSES_PER_PAGE
-      );
+      await ExpenseService.getAllExpensesAndCount(user, page, perPage);
 
     res.json({
       expenses: expenses,
       currentPage: page,
-      hasNextPage: EXPENSES_PER_PAGE * page < count,
+      hasNextPage: perPage * page < count,
       nextPage: page + 1,
       hasPreviousPage: page > 1,
       previousPage: page - 1,
-      lastPage: Math.ceil(count / EXPENSES_PER_PAGE),
+      lastPage: Math.ceil(count / perPage),
     });
   } catch (error) {
     console.log(error);
