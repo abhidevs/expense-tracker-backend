@@ -1,6 +1,11 @@
+import path from "path";
+import fs from "fs";
+
 import express from "express";
 import bodyParser from "body-parser";
 import cors from "cors";
+import helmet from "helmet";
+import morgan from "morgan";
 import dotenv from "dotenv";
 
 dotenv.config();
@@ -15,6 +20,14 @@ import Order from "./models/Order";
 import ForgotPasswordRequest from "./models/ForgotPasswordRequest";
 
 const app = express();
+
+const accessLogStream = fs.createWriteStream(
+  path.join(__dirname, "access.log"),
+  { flags: "a" }
+);
+
+app.use(helmet());
+app.use(morgan("combined", { stream: accessLogStream }));
 
 app.use(cors());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -32,9 +45,10 @@ Order.belongsTo(User);
 User.hasMany(ForgotPasswordRequest);
 ForgotPasswordRequest.belongsTo(User);
 
+const port = process.env.PORT || 3000;
 sequelize
   .sync()
   .then((res) =>
-    app.listen(3000, () => console.log("server running at port 3000"))
+    app.listen(port, () => console.log(`server running at port ${port}`))
   )
   .catch((err) => console.log(err));
