@@ -26,7 +26,7 @@ const accessLogStream = fs.createWriteStream(
   { flags: "a" }
 );
 
-app.use(helmet());
+// app.use(helmet());
 app.use(morgan("combined", { stream: accessLogStream }));
 
 app.use(cors());
@@ -37,6 +37,12 @@ app.get("/api", (req, res) => res.send("Welcome to Expense Tracker API"));
 app.use("/api/auth", AuthRoutes);
 app.use("/api/user/expense", ExpenseRoutes);
 app.use("/api/user/payment", PaymentRoutes);
+
+app.use((req, res) => {
+  res.sendFile(
+    path.join(__dirname, `public/${req.url === "/" ? "index.html" : req.url}`)
+  );
+});
 
 User.hasMany(Expense);
 Expense.belongsTo(User);
