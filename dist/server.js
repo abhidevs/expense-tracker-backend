@@ -5,6 +5,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const path_1 = __importDefault(require("path"));
 const fs_1 = __importDefault(require("fs"));
+const https_1 = __importDefault(require("https"));
 const express_1 = __importDefault(require("express"));
 const body_parser_1 = __importDefault(require("body-parser"));
 const cors_1 = __importDefault(require("cors"));
@@ -21,6 +22,8 @@ const Expense_1 = __importDefault(require("./models/Expense"));
 const Order_1 = __importDefault(require("./models/Order"));
 const ForgotPasswordRequest_1 = __importDefault(require("./models/ForgotPasswordRequest"));
 const app = (0, express_1.default)();
+const privateKey = fs_1.default.readFileSync("server.key");
+const certificate = fs_1.default.readFileSync("server.cert");
 const accessLogStream = fs_1.default.createWriteStream(path_1.default.join(__dirname, "access.log"), { flags: "a" });
 app.use((0, helmet_1.default)());
 app.use((0, morgan_1.default)("combined", { stream: accessLogStream }));
@@ -40,5 +43,9 @@ ForgotPasswordRequest_1.default.belongsTo(User_1.default);
 const port = process.env.PORT || 3000;
 db_1.default
     .sync()
-    .then((res) => app.listen(port, () => console.log(`server running at port ${port}`)))
+    .then((res) => {
+    https_1.default
+        .createServer({ key: privateKey, cert: certificate }, app)
+        .listen(port, () => console.log(`server running at port ${port}`));
+})
     .catch((err) => console.log(err));

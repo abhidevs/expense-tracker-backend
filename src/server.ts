@@ -1,5 +1,6 @@
 import path from "path";
 import fs from "fs";
+import https from "https";
 
 import express from "express";
 import bodyParser from "body-parser";
@@ -20,6 +21,9 @@ import Order from "./models/Order";
 import ForgotPasswordRequest from "./models/ForgotPasswordRequest";
 
 const app = express();
+
+const privateKey = fs.readFileSync("server.key");
+const certificate = fs.readFileSync("server.cert");
 
 const accessLogStream = fs.createWriteStream(
   path.join(__dirname, "access.log"),
@@ -48,7 +52,9 @@ ForgotPasswordRequest.belongsTo(User);
 const port = process.env.PORT || 3000;
 sequelize
   .sync()
-  .then((res) =>
-    app.listen(port, () => console.log(`server running at port ${port}`))
-  )
+  .then((res) => {
+    https
+      .createServer({ key: privateKey, cert: certificate }, app)
+      .listen(port, () => console.log(`server running at port ${port}`));
+  })
   .catch((err) => console.log(err));
