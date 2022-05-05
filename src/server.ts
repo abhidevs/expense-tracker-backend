@@ -39,9 +39,8 @@ app.use("/api/user/expense", ExpenseRoutes);
 app.use("/api/user/payment", PaymentRoutes);
 
 app.use((req, res) => {
-  res.sendFile(
-    path.join(__dirname, `public/${req.url === "/" ? "index.html" : req.url}`)
-  );
+  let page = req.url === "/" ? "index.html" : req.url.split("?")[0];
+  res.sendFile(path.join(__dirname, `public/${page}`));
 });
 
 User.hasMany(Expense);

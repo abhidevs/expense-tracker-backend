@@ -31,7 +31,8 @@ app.use("/api/auth", AuthRoutes_1.default);
 app.use("/api/user/expense", ExpenseRoutes_1.default);
 app.use("/api/user/payment", PaymentRoutes_1.default);
 app.use((req, res) => {
-    res.sendFile(path_1.default.join(__dirname, `public/${req.url === "/" ? "index.html" : req.url}`));
+    let page = req.url === "/" ? "index.html" : req.url.split("?")[0];
+    res.sendFile(path_1.default.join(__dirname, `public/${page}`));
 });
 User_1.default.hasMany(Expense_1.default);
 Expense_1.default.belongsTo(User_1.default);
