@@ -21,7 +21,6 @@ const Order_1 = __importDefault(require("./models/Order"));
 const ForgotPasswordRequest_1 = __importDefault(require("./models/ForgotPasswordRequest"));
 const app = (0, express_1.default)();
 const accessLogStream = fs_1.default.createWriteStream(path_1.default.join(__dirname, "access.log"), { flags: "a" });
-// app.use(helmet());
 app.use((0, morgan_1.default)("combined", { stream: accessLogStream }));
 app.use((0, cors_1.default)());
 app.use(body_parser_1.default.urlencoded({ extended: true }));

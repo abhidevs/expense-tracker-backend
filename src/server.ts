@@ -4,7 +4,6 @@ import fs from "fs";
 import express from "express";
 import bodyParser from "body-parser";
 import cors from "cors";
-import helmet from "helmet";
 import morgan from "morgan";
 import dotenv from "dotenv";
 
@@ -26,7 +25,6 @@ const accessLogStream = fs.createWriteStream(
   { flags: "a" }
 );
 
-// app.use(helmet());
 app.use(morgan("combined", { stream: accessLogStream }));
 
 app.use(cors());
